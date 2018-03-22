@@ -16,7 +16,7 @@
 # the distributive law.
 
 # Your goal is to fill in the do_multiply() function so that multiplication
-# can be simplified as intended. 
+# can be simplified as intended.
 
 # Testing will be mathematical:  If you return a flat list that
 # evaluates to the same value as the original expression, you will
@@ -69,7 +69,7 @@ class Sum(list, Expression):
     """
     def __repr__(self):
         return "Sum(%s)" % list.__repr__(self)
-    
+
     def simplify(self):
         """
         This is the starting point for the task you need to perform. It
@@ -99,7 +99,7 @@ class Product(list, Expression):
     """
     def __repr__(self):
         return "Product(%s)" % list.__repr__(self)
-    
+
     def simplify(self):
         """
         To simplify a product, we need to multiply all its factors together
@@ -166,6 +166,12 @@ def do_multiply(expr1, expr2):
     * expr1 is a Product, and expr2 is a Sum
     * expr1 is a Product, and expr2 is a Product
 
+    I see it this way:
+
+    - both sums, add em up into one sum
+    - both products, add them all into one product
+    - they are different, multiply every term in sum by product
+
     You need to create Sums or Products that represent what you get by
     applying the algebraic rules of multiplication to these expressions,
     and simplifying.
@@ -173,6 +179,25 @@ def do_multiply(expr1, expr2):
     Look above for details on the Sum and Product classes. The Python operator
     '*' will not help you.
     """
-    # Replace this with your solution.
-    raise NotImplementedError
+    if isinstance(expr1, Sum) and isinstance(expr2, Sum):
+        terms = []
+        for term1 in expr1:
+            for term2 in expr2:
+                terms.append(Product([term1, term2]).simplify())
+        return Sum(terms)
+    elif isinstance(expr1, Product) and isinstance(expr2, Product):
+        terms = [term for term in expr1]
+        terms.extend([term for term in expr2])
+        return Product(terms)
 
+    else:
+        if isinstance(expr1, Sum):
+            sum_expr = expr1
+            prod_expr = expr2
+        else:
+            sum_expr = expr2
+            prod_expr = expr1
+        terms = []
+        for term in sum_expr:
+            terms.append(Product([term, prod_expr]).simplify())
+        return Sum(terms)
